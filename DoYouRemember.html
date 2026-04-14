@@ -82,7 +82,7 @@ html, body {
   align-items: center; justify-content: center;
   opacity: 0; pointer-events: none; z-index: 10;
   transition: opacity 1.5s ease;
-  padding: 2rem;
+  padding: 4rem 2rem; /* Safe zone for fullscreen */
 }
 .scene.active { opacity: 1; pointer-events: auto; }
 
@@ -98,24 +98,27 @@ html, body {
 
 .memory-title {
   font-family: 'Cinzel', serif;
-  font-size: clamp(28px, 4.5vw, 52px);
+  font-size: clamp(24px, 4vw, 44px); /* Reduced */
   font-weight: 400;
   color: var(--gold2);
   text-align: center;
-  margin-bottom: 2rem;
-  letter-spacing: 0.1em;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
 }
 
 .memory-detail {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(22px, 3.2vw, 38px);
+  font-size: clamp(20px, 2.8vw, 34px); /* Reduced from 22/3.2/38 */
   font-style: italic;
   color: var(--cream);
   text-align: center;
-  line-height: 1.8;
-  max-width: 850px;
+  line-height: 1.6; /* Tighter */
+  max-width: 950px;
   font-weight: 400;
   text-shadow: 0 0 20px rgba(0,0,0,0.4);
+  padding: 0 2rem;
+  margin: 0.3rem 0;
 }
 
 .memory-small {
@@ -234,19 +237,21 @@ html, body {
 <div class="scene" id="s6">
   <p class="memory-date">30th — 31st of May 2025</p>
   <p class="memory-title">The first time I realised</p>
-  <p class="memory-detail" style="font-size: clamp(18px, 2.4vw, 30px); line-height: 1.6; max-width: 950px;">
-    In the night time, before you had your dinner,<br>
-    you asked me for my ex's ID.<br>
-    I didn't want you to talk to her because of her lying habit.<br><br>
-    You kept insisting but I kept denying —<br>
-    I didn't want our relation to get weak because of her.<br>
-    You got mad. I didn't know you would overthink that.<br><br>
-    I showed you the chat and then blocked her.<br>
-    In the morning you got emotional and said<br>
+  <p class="memory-detail" style="font-size: clamp(17px, 2.3vw, 28px); line-height: 1.5; max-width: 980px;">
+    In the night time, you asked for my ex's ID.<br>
+    I didn't want you talking to her — she lies.<br><br>
+    You kept insisting. I kept denying.<br>
+    I didn't want us to get weak because of her.<br>
+    You got mad. I didn't know you'd overthink.<br><br>
+    I showed you the chat and blocked her.<br>
+    In the morning, you got emotional and said<br>
     "You don't trust me."<br><br>
-    I didn't respond knowing you were not well.
+    I stayed quiet. You weren't well.
   </p>
-  <p class="memory-small" style="font-size: clamp(16px, 2vw, 22px);">I never meant to hurt you.<br>It was just a low part where we walked together.</p>
+  <p class="memory-small" style="font-size: clamp(16px, 2vw, 22px); margin-top: 1.5rem;">
+    I never meant to hurt you.<br>
+    It was just a low part we walked through together.
+  </p>
 </div>
 
 <!-- MEMORY 7 - Something you miss -->
