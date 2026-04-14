@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do You Remember? · Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+:root {
+  --gold: #f0d48a;
+  --gold2: #fae3a8;
+  --rose: #e08ea0;
+  --rose2: #f0aebe;
+  --cream: #faf0e0;
+  --mist: rgba(250, 240, 224, 0.8);
+}
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', serif;
+  color: #fff;
+}
+#canvas { position: fixed; inset: 0; z-index: 0; }
+#vignette {
+  position: fixed; inset: 0; z-index: 5; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.95) 100%);
+}
+#grain {
+  position: fixed; inset: 0; z-index: 6; opacity: 0.035; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+#bars-top, #bars-bot {
+  position: fixed; left: 0; right: 0; height: 72px; background: #000;
+  z-index: 50;
+  transition: height 1.6s ease;
+}
+#bars-top { top: 0; } #bars-bot { bottom: 0; }
+
+/* START SCREEN */
+#start-screen {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #000;
+  z-index: 500;
+  transition: opacity 1.2s ease;
+}
+#start-screen.fade-out { opacity: 0; pointer-events: none; }
+.start-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(18px, 2.5vw, 30px);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+.start-question {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-style: italic;
+  color: var(--cream);
+  margin-bottom: 3rem;
+}
+.start-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 1.8vw, 22px);
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.25em;
+  animation: softPulse 3s infinite;
+}
+@keyframes softPulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.45; }
+}
+
+.scene {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; z-index: 10;
+  transition: opacity 1.5s ease;
+  padding: 2rem;
+}
+.scene.active { opacity: 1; pointer-events: auto; }
+
+.memory-date {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(14px, 1.5vw, 20px);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.memory-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 400;
+  color: var(--gold2);
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 0.1em;
+}
+
+.memory-detail {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3.2vw, 38px);
+  font-style: italic;
+  color: var(--cream);
+  text-align: center;
+  line-height: 1.8;
+  max-width: 850px;
+  font-weight: 400;
+  text-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.memory-small {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-style: italic;
+  color: var(--rose2);
+  text-align: center;
+  margin-top: 2rem;
+  opacity: 0.85;
+}
+
+.question-big {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-style: italic;
+  color: var(--cream);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.finale {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(36px, 6vw, 64px);
+  color: var(--gold2);
+  text-align: center;
+  letter-spacing: 0.15em;
+}
+.proposal {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px, 3.8vw, 46px);
+  font-style: italic;
+  color: var(--rose2);
+  text-align: center;
+  margin-top: 2rem;
+  font-weight: 400;
+  text-shadow: 0 0 30px rgba(240, 174, 190, 0.2);
+  line-height: 1.6;
+}
+
+.footer-note {
+  position: fixed;
+  bottom: 90px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(13px, 1.4vw, 16px);
+  color: rgba(255,255,255,0.12);
+  letter-spacing: 0.3em;
+  z-index: 20;
+}
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+  <div class="start-title">a year ago</div>
+  <div class="start-question">Do you remember?</div>
+  <div class="start-hint">press space</div>
+</div>
+
+<div id="grain"></div>
+<div id="vignette"></div>
+<div id="bars-top"></div>
+<div id="bars-bot"></div>
+<canvas id="canvas"></canvas>
+
+<!-- SCENE 0 - Opening question -->
+<div class="scene" id="s0">
+  <p class="question-big">Do you remember<br>the first time?</p>
+  <p class="memory-small">I do. Every detail.</p>
+</div>
+
+<!-- MEMORY 1 - First meeting/how it started -->
+<div class="scene" id="s1">
+  <p class="memory-date">12th of Feburary 2024</p>
+  <p class="memory-title">Where it began</p>
+  <p class="memory-detail">When you joined Srijit's Server and I welcomed you, and you thought I am a simp and you instantly went guard mode? HAHA that was funny.</p>
+  <p class="memory-small">I knew you were different.</p>
+</div>
+
+<!-- MEMORY 2 - First thing that made you fall -->
+<div class="scene" id="s2">
+  <p class="memory-date">10th of April 2024</p>
+  <p class="memory-title">The moment I fell</p>
+  <p class="memory-detail">At that time I was in your followers list, it was time of Eid and you added a story of your pic and that was the fist time I saw you and insantly fell.</p>
+  <p class="memory-small">I still think about it.</p>
+</div>
+
+<!-- MEMORY 3 - A funny moment -->
+<div class="scene" id="s3">
+  <p class="memory-date">29th of May 2025</p>
+  <p class="memory-title">The time</p>
+  <p class="memory-detail">It was the time you came back after a long break and I was having my instagram ID in my pronouns, not knowing that you'll come online. you came and instantly started spamming me on instagram and dc both.</p>
+  <p class="memory-small">I like it whenever you spam me like that</p>
+</div>
+
+<!-- MEMORY 4 - A soft moment -->
+<div class="scene" id="s4">
+  <p class="memory-date">30th of May 2025</p>
+  <p class="memory-title">The First day of our relationship</p>
+  <p class="memory-detail">It was a just a normal day, I told you how my life is going and about the breakup I did, then I told you about my real feelings and you instantly confessed too-but you were scared that I'll do something same like what I did earlier</p>
+  <p class="memory-small">I never knew you were onto me.</p>
+</div>
+
+<!-- MEMORY 5 - Something she doesn't know -->
+<div class="scene" id="s5">
+  <p class="memory-date">31st of May 2025</p>
+  <p class="memory-title">Was not Expecting that</p>
+  <p class="memory-detail">It was 11am when I saw my notifications and replied to yours, you were still online and then you asked me when I woke up. I told you I woke up 2 hours ago and you were like "WTH? I was waiting for you and you were enjoying yourself huh?"</p>
+  <p class="memory-small">You still look cute even when you are mad at me.</p>
+</div>
+
+<!-- MEMORY 6 -->
+<div class="scene" id="s6">
+  <p class="memory-date">30th — 31st of May 2025</p>
+  <p class="memory-title">The first time I realised</p>
+  <p class="memory-detail" style="font-size: clamp(18px, 2.4vw, 30px); line-height: 1.6; max-width: 950px;">
+    In the night time, before you had your dinner,<br>
+    you asked me for my ex's ID.<br>
+    I didn't want you to talk to her because of her lying habit.<br><br>
+    You kept insisting but I kept denying —<br>
+    I didn't want our relation to get weak because of her.<br>
+    You got mad. I didn't know you would overthink that.<br><br>
+    I showed you the chat and then blocked her.<br>
+    In the morning you got emotional and said<br>
+    "You don't trust me."<br><br>
+    I didn't respond knowing you were not well.
+  </p>
+  <p class="memory-small" style="font-size: clamp(16px, 2vw, 22px);">I never meant to hurt you.<br>It was just a low part where we walked together.</p>
+</div>
+
+<!-- MEMORY 7 - Something you miss -->
+<div class="scene" id="s7">
+  <p class="memory-date">3rd of June 2025</p>
+  <p class="memory-title">I missed you so bad.</p>
+  <p class="memory-detail">It was the day when you were going away from me, even for a while but it took my peace away. It was the first time I stayed awake for someone, prayed for someone and it was you-No one else it can be.</p>
+  <p class="memory-small">In every prayer, I mention your name before heaven.</p>
+</div>
+<!-- MEMORY 8 -->
+<div class="scene" id="s8">
+  <p class="memory-date">4th of June 2025</p>
+  <p class="memory-title">The first day without you</p>
+  <p class="memory-detail">My life became empty and I kept staring at your picture for the whole day. I won't hide but I kept crying at that time. I realised how weak I am without you, how much I am in love with you.</p>
+  <p class="memory-small">I can't imagine a life without you in it.</p>
+</div>
+
+<!-- SCENE 9 - The question -->
+<div class="scene" id="s9">
+  <p class="question-big">Do you remember<br>all of this?</p>
+  <p class="memory-detail" style="margin-top: 2rem;">Because I do.<br>Every single moment.</p>
+</div>
+
+<!-- SCENE 10 - Vulnerable confession -->
+<div class="scene" id="s10">
+  <p class="memory-detail" style="margin-bottom: 2rem;">I won't lie...<br>My hands are shaking,<br>my eyes are wet,<br>and my thoughts are yours<br>while creating this.</p>
+  <p class="finale">I want to live with you.</p>
+  <p class="memory-small" style="margin-top: 2.5rem;">I can't stop missing you.<br>Every thought is yours.<br>Every second.</p>
+</div>
+
+<!-- SCENE 11 - The quiet proposal -->
+<div class="scene" id="s11">
+  <p class="memory-detail">So I'll ask you this,<br>not for now, but for someday...</p>
+  <p class="proposal">Will you marry me,<br>once we are both ready?</p>
+</div>
+
+<p class="footer-note">— I remember everything —</p>
+
+<script>
+const cv = document.getElementById('canvas'), cx = cv.getContext('2d');
+let W, H, stars = [];
+let filmStarted = false;
+
+function rsz() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+rsz(); addEventListener('resize', rsz);
+
+function Star() {
+  this.x = Math.random() * W; this.y = Math.random() * H;
+  this.r = Math.random() * 1.2 + 0.15; this.a = Math.random() * 0.6 + 0.15;
+  this.sp = Math.random() * 0.008 + 0.001; this.ph = Math.random() * Math.PI * 2;
+  this.col = Math.random() > 0.8 ? '#f0d48a' : Math.random() > 0.65 ? '#f0aebe' : '#fff';
+}
+for (let i = 0; i < 140; i++) stars.push(new Star());
+
+function drawStars() {
+  stars.forEach(s => {
+    s.ph += s.sp;
+    const a = s.a * (0.5 + 0.4 * Math.sin(s.ph));
+    cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    cx.fillStyle = s.col; cx.globalAlpha = a; cx.fill(); cx.globalAlpha = 1;
+  });
+}
+
+const bgs = [['#030107', '#080212'], ['#040208', '#0a0315'], ['#020105', '#06020e']];
+let bgI = 0, bgP = 0;
+
+function lc(a, b, t) {
+  const p = s => parseInt(s, 16);
+  const r = (v, w) => Math.round(v + (w - v) * t).toString(16).padStart(2, '0');
+  return '#' + r(p(a.slice(1, 3)), p(b.slice(1, 3))) + r(p(a.slice(3, 5)), p(b.slice(3, 5))) + r(p(a.slice(5, 7)), p(b.slice(5, 7)));
+}
+
+function drawBg() {
+  const [a1, b1] = bgs[bgI % bgs.length], [a2, b2] = bgs[(bgI + 1) % bgs.length];
+  const g = cx.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.5, W * 0.8);
+  g.addColorStop(0, lc(b1, b2, bgP)); g.addColorStop(1, lc(a1, a2, bgP));
+  cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+  bgP += 0.001; if (bgP >= 1) { bgP = 0; bgI++; }
+}
+
+requestAnimationFrame(function loop() {
+  requestAnimationFrame(loop);
+  drawBg(); drawStars();
+});
+
+const scenes = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'];
+const durations = [3000, 6000, 5500, 5500, 6000, 5500, 8000, 5500, 5500, 4500, 6000, 5000];
+let cur = -1;
+let timeouts = [];
+
+function showScene(i) {
+  if (cur >= 0) document.getElementById(scenes[cur]).classList.remove('active');
+  cur = i;
+  document.getElementById(scenes[i]).classList.add('active');
+}
+
+function startFilm() {
+  if (filmStarted) return;
+  filmStarted = true;
+  
+  const startScreen = document.getElementById('start-screen');
+  startScreen.classList.add('fade-out');
+  
+  setTimeout(() => {
+    startScreen.style.display = 'none';
+    document.getElementById('bars-top').style.height = '56px';
+    document.getElementById('bars-bot').style.height = '56px';
+    
+    let offset = 0;
+    scenes.forEach((_, i) => {
+      const t = setTimeout(() => showScene(i), offset);
+      timeouts.push(t);
+      offset += durations[i];
+    });
+  }, 800);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && !filmStarted) { e.preventDefault(); startFilm(); }
+});
+document.addEventListener('click', () => { if (!filmStarted) startFilm(); });
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyR') location.reload();
+  if (!filmStarted) return;
+  if (e.code === 'ArrowRight' && cur < scenes.length - 1) {
+    e.preventDefault(); timeouts.forEach(clearTimeout); timeouts = []; showScene(cur + 1);
+  }
+  if (e.code === 'ArrowLeft' && cur > 0) {
+    e.preventDefault(); timeouts.forEach(clearTimeout); timeouts = []; showScene(cur - 1);
+  }
+});
+</script>
+</body>
+</html>

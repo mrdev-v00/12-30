@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Warda · 12 May</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+:root {
+  --gold: #f0d48a;
+  --gold2: #fae3a8;
+  --rose: #e08ea0;
+  --rose2: #f0aebe;
+  --cream: #faf0e0;
+  --mist: rgba(250, 240, 224, 0.8);
+}
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', serif;
+  color: #fff;
+}
+#canvas { position: fixed; inset: 0; z-index: 0; }
+#vignette {
+  position: fixed; inset: 0; z-index: 5; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.95) 100%);
+}
+#grain {
+  position: fixed; inset: 0; z-index: 6; opacity: 0.035; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+#bars-top, #bars-bot {
+  position: fixed; left: 0; right: 0; height: 72px; background: #000;
+  z-index: 50;
+  transition: height 1.6s ease;
+}
+#bars-top { top: 0; } #bars-bot { bottom: 0; }
+
+/* START SCREEN */
+#start-screen {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #000;
+  z-index: 500;
+  transition: opacity 1.2s ease;
+}
+#start-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+.start-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(18px, 2.5vw, 30px);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 30px rgba(240, 212, 138, 0.25);
+  font-weight: 400;
+}
+.start-name {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(36px, 5.5vw, 64px);
+  letter-spacing: 0.25em;
+  color: var(--rose2);
+  margin-bottom: 2rem;
+  text-shadow: 0 0 40px rgba(240, 174, 190, 0.25);
+  font-weight: 500;
+}
+.start-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 1.8vw, 22px);
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.25em;
+  font-style: italic;
+  margin-top: 2.5rem;
+  animation: softPulse 3s infinite;
+}
+@keyframes softPulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.45; }
+}
+
+.scene {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; z-index: 10;
+  transition: opacity 1.5s ease;
+}
+.scene.active { opacity: 1; pointer-events: auto; }
+
+.lbl {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(12px, 1.3vw, 18px);
+  letter-spacing: 0.5em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 0 15px rgba(240, 212, 138, 0.2);
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.soft-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(32px, 5.5vw, 64px);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--gold2);
+  text-align: center;
+  line-height: 1.5;
+  text-shadow: 0 0 30px rgba(250, 227, 168, 0.2);
+}
+
+.verse {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4vw, 48px);
+  font-style: italic;
+  color: var(--cream);
+  text-align: center;
+  line-height: 1.8;
+  max-width: 900px;
+  padding: 0 2rem;
+  font-weight: 400;
+  text-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+
+.soft-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-style: italic;
+  color: var(--mist);
+  text-align: center;
+  line-height: 1.8;
+  max-width: 700px;
+  padding: 0 2rem;
+  margin-top: 1.5rem;
+  font-weight: 400;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.name-glow {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(44px, 7vw, 80px);
+  font-weight: 500;
+  color: var(--gold2);
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 40px rgba(250, 227, 168, 0.25);
+  margin-bottom: 1.5rem;
+}
+
+.date-soft {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 400;
+  color: var(--rose2);
+  text-align: center;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  text-shadow: 0 0 40px rgba(240, 174, 190, 0.25);
+  opacity: 0.9;
+}
+
+.footer-note {
+  position: fixed;
+  bottom: 90px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(13px, 1.4vw, 16px);
+  color: rgba(255,255,255,0.15);
+  letter-spacing: 0.3em;
+  font-style: italic;
+  z-index: 20;
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="start-screen">
+  <div class="start-title">a small preview</div>
+  <div class="start-name">Warda</div>
+  <div style="font-family: 'Cinzel', serif; font-size: clamp(12px, 1.5vw, 18px); color: var(--gold); letter-spacing: 0.3em; opacity: 0.7;">12 may</div>
+  <div class="start-hint">press space</div>
+</div>
+
+<div id="grain"></div>
+<div id="vignette"></div>
+<div id="bars-top"></div>
+<div id="bars-bot"></div>
+<canvas id="canvas"></canvas>
+
+<!-- SCENE 0 - Quiet opening -->
+<div class="scene" id="s0">
+  <p class="lbl">something I've been working on</p>
+  <h1 class="soft-title">For you.</h1>
+</div>
+
+<!-- SCENE 1 - Her name softly -->
+<div class="scene" id="s1">
+  <p class="lbl">because</p>
+  <h1 class="name-glow">Warda.</h1>
+  <p class="soft-sub">You make things feel different.<br>Warmer. Softer. Better.</p>
+</div>
+
+<!-- SCENE 2 - Preview verse -->
+<div class="scene" id="s2">
+  <p class="verse">"You're the first thing on my mind<br>in the morning."</p>
+  <p class="verse" style="margin-top: 2rem; font-size: clamp(22px, 3.5vw, 40px);">"The last thought I hold<br>before I sleep."</p>
+</div>
+
+<!-- SCENE 3 - The date, but soft -->
+<div class="scene" id="s3">
+  <p class="lbl">on</p>
+  <h1 class="date-soft">12 May</h1>
+  <p class="soft-sub" style="margin-top: 2.5rem;">I have something<br>I want you to see.</p>
+</div>
+
+<!-- SCENE 4 - Gentle close -->
+<div class="scene" id="s4">
+  <p class="verse" style="font-size: clamp(24px, 3.5vw, 40px);">Not a big announcement.<br>Just... something warm.<br>Something soft.</p>
+  <p class="soft-sub" style="margin-top: 3rem;">Made for you. 🤍</p>
+</div>
+
+<p class="footer-note">— wait for the 12th —</p>
+
+<script>
+const cv = document.getElementById('canvas'), cx = cv.getContext('2d');
+let W, H, stars = [];
+let filmStarted = false;
+
+function rsz() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+rsz(); addEventListener('resize', rsz);
+
+function Star() {
+  this.x = Math.random() * W; this.y = Math.random() * H;
+  this.r = Math.random() * 1.2 + 0.15; this.a = Math.random() * 0.6 + 0.15;
+  this.sp = Math.random() * 0.01 + 0.002; this.ph = Math.random() * Math.PI * 2;
+  this.col = Math.random() > 0.8 ? '#f0d48a' : Math.random() > 0.65 ? '#f0aebe' : '#fff';
+}
+for (let i = 0; i < 130; i++) stars.push(new Star());
+
+function drawStars() {
+  stars.forEach(s => {
+    s.ph += s.sp;
+    const a = s.a * (0.5 + 0.4 * Math.sin(s.ph));
+    cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    cx.fillStyle = s.col; cx.globalAlpha = a; cx.fill(); cx.globalAlpha = 1;
+  });
+}
+
+const bgs = [['#030107', '#080212'], ['#040208', '#0a0315'], ['#020105', '#06020e']];
+let bgI = 0, bgP = 0;
+
+function lc(a, b, t) {
+  const p = s => parseInt(s, 16);
+  const r = (v, w) => Math.round(v + (w - v) * t).toString(16).padStart(2, '0');
+  return '#' + r(p(a.slice(1, 3)), p(b.slice(1, 3))) + r(p(a.slice(3, 5)), p(b.slice(3, 5))) + r(p(a.slice(5, 7)), p(b.slice(5, 7)));
+}
+
+function drawBg() {
+  const [a1, b1] = bgs[bgI % bgs.length], [a2, b2] = bgs[(bgI + 1) % bgs.length];
+  const g = cx.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.5, W * 0.8);
+  g.addColorStop(0, lc(b1, b2, bgP)); g.addColorStop(1, lc(a1, a2, bgP));
+  cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+  bgP += 0.001; if (bgP >= 1) { bgP = 0; bgI++; }
+}
+
+requestAnimationFrame(function loop() {
+  requestAnimationFrame(loop);
+  drawBg(); drawStars();
+});
+
+const scenes = ['s0', 's1', 's2', 's3', 's4'];
+const durations = [3500, 4200, 4500, 4000, 4800];
+let cur = -1;
+let timeouts = [];
+
+function showScene(i) {
+  if (cur >= 0) {
+    document.getElementById(scenes[cur]).classList.remove('active');
+  }
+  cur = i;
+  document.getElementById(scenes[i]).classList.add('active');
+}
+
+function startFilm() {
+  if (filmStarted) return;
+  filmStarted = true;
+  
+  const startScreen = document.getElementById('start-screen');
+  startScreen.classList.add('fade-out');
+  
+  setTimeout(() => {
+    startScreen.style.display = 'none';
+    document.getElementById('bars-top').style.height = '56px';
+    document.getElementById('bars-bot').style.height = '56px';
+    
+    let offset = 0;
+    scenes.forEach((_, i) => {
+      const t = setTimeout(() => showScene(i), offset);
+      timeouts.push(t);
+      offset += durations[i];
+    });
+  }, 800);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && !filmStarted) {
+    e.preventDefault();
+    startFilm();
+  }
+});
+
+document.addEventListener('click', () => {
+  if (!filmStarted) startFilm();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyR') location.reload();
+  if (!filmStarted) return;
+  
+  if (e.code === 'ArrowRight' && cur < scenes.length - 1) {
+    e.preventDefault();
+    timeouts.forEach(clearTimeout);
+    timeouts = [];
+    showScene(cur + 1);
+  }
+  
+  if (e.code === 'ArrowLeft' && cur > 0) {
+    e.preventDefault();
+    timeouts.forEach(clearTimeout);
+    timeouts = [];
+    showScene(cur - 1);
+  }
+});
+</script>
+</body>
+</html>

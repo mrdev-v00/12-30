@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Year Film</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+cursor:none;
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+background:#000;
+font-family:'Cormorant Garamond',serif;
+}
+
+canvas{
+position:fixed;
+inset:0;
+z-index:0;
+}
+
+#candle{
+position:fixed;
+top:-150px;
+left:-150px;
+width:500px;
+height:500px;
+background:radial-gradient(circle,
+rgba(255,220,150,.3),
+rgba(255,180,100,.15),
+transparent 60%);
+filter:blur(40px);
+opacity:.65;
+animation:flicker 3s infinite ease-in-out;
+z-index:1;
+}
+
+@keyframes flicker{
+0%,100%{transform:scale(1);opacity:.6}
+50%{transform:scale(1.06);opacity:.7}
+}
+
+#start{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+perspective:1400px;
+z-index:10;
+background:#000;
+transition:opacity 1.2s ease;
+}
+
+#introWrap{
+transform-style:preserve-3d;
+}
+
+#introText{
+font-family:'Cinzel', serif;
+font-size:clamp(28px, 4vw, 56px); /* Reduced from 32px/5vw/72px */
+letter-spacing:.4em;
+color:#e6c27a;
+white-space:nowrap;
+text-shadow:0 0 30px rgba(230,194,122,.35);
+font-weight: 600;
+}
+
+.scene{
+position:fixed;
+inset:0;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+
+opacity:0;
+filter:blur(18px);
+transform:scale(1.05);
+color:#f5e7d0;
+padding:20px;
+}
+
+.scene.active{
+animation:snap 0.9s ease forwards;
+}
+
+@keyframes snap{
+0%{opacity:0;filter:blur(20px);transform:scale(1.06)}
+40%{opacity:1}
+100%{opacity:1;filter:blur(0);transform:scale(1)}
+}
+
+/* Title - for "My Girl" and "30 May" */
+.title{
+font-family:'Cinzel', serif;
+font-size:clamp(42px, 7vw, 88px); /* Bigger for impact */
+color:#e6c27a;
+letter-spacing:.12em;
+font-weight: 600;
+margin-bottom: 2rem;
+line-height: 1.2;
+}
+
+/* Main text - for the big statements */
+.text{
+font-size:clamp(26px, 3.8vw, 48px); /* Increased significantly */
+line-height:1.7;
+max-width:950px;
+color:rgba(255,240,220,.95);
+font-weight: 400;
+padding: 0 2rem;
+margin: 0.5rem 0;
+}
+
+/* Subtitle/smaller text */
+.small{
+font-size:clamp(20px, 2.5vw, 32px); /* Much larger */
+opacity:.9;
+margin-top:35px;
+font-style: italic;
+color: #e6c27a;
+line-height: 1.6;
+max-width: 800px;
+padding: 0 2rem;
+}
+
+/* Love note header styling */
+.love-note-header {
+    font-family:'Cinzel', serif;
+    font-size:clamp(22px, 3vw, 36px);
+    color: #e89eb0;
+    letter-spacing: .15em;
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+}
+
+/* Love note body */
+.love-note-text {
+    font-size:clamp(24px, 3.5vw, 44px);
+    line-height:1.8;
+    max-width:900px;
+    color:rgba(255,240,220,.95);
+    font-weight: 400;
+    font-style: italic;
+    padding: 0 2rem;
+}
+
+/* Anniversary final text */
+.anniversary-final {
+    font-size:clamp(28px, 4vw, 52px);
+    color: #f5e7d0;
+    line-height: 1.8;
+    font-weight: 400;
+}
+
+.anniversary-gold {
+    font-size:clamp(32px, 4.5vw, 58px);
+    color: #e6c27a;
+    margin-top: 1.2rem;
+    font-weight: 500;
+}
+</style>
+</head>
+
+<body>
+
+<div id="candle"></div>
+
+<!-- START SCREEN -->
+<div id="start">
+  <div id="introWrap">
+    <div id="introText">OUR 1ST ANNIVERSARY</div>
+  </div>
+</div>
+
+<!-- MUSIC -->
+<audio id="music">
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7c1c4f6f79.mp3">
+</audio>
+
+<canvas id="c"></canvas>
+
+<!-- SCENES -->
+<div class="scene">
+    <div class="title">My Girl</div>
+    <div class="text">It started quietly… and became everything.</div>
+</div>
+
+<div class="scene">
+    <div class="text">A year of moments I never wanted to end.</div>
+</div>
+
+<div class="scene">
+    <div class="text">Somewhere along the way… you became my whole world.</div>
+</div>
+
+<div class="scene">
+    <div class="text">I loved you for 365 days…<br>and I still haven't finished.</div>
+    <div class="small">Will you stay… for all the years after this one?</div>
+</div>
+
+<!-- 💌 LOVE NOTES -->
+<div class="scene">
+    <div class="love-note-header">Love Note #1</div>
+    <div class="love-note-text">I still remember the first time you made me smile without trying.</div>
+</div>
+
+<div class="scene">
+    <div class="love-note-header">Love Note #2</div>
+    <div class="love-note-text">If I could pause time, it would always stop when you're laughing.</div>
+</div>
+
+<div class="scene">
+    <div class="love-note-header">Love Note #3</div>
+    <div class="love-note-text">No matter where life goes… I always find my way back to you.</div>
+</div>
+
+<div class="scene">
+    <div class="title" style="margin-bottom: 1rem;">30 May</div>
+    <div class="anniversary-final">One Year With You</div>
+    <div class="anniversary-gold">Happy Anniversary</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+/* THREE BACKGROUND */
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(70,innerWidth/innerHeight,0.1,1000)
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("c"),alpha:true})
+
+renderer.setSize(innerWidth,innerHeight)
+camera.position.z = 6
+
+const geo = new THREE.BufferGeometry()
+const count = 1600
+const pos = new Float32Array(count*3)
+
+for(let i=0;i<count;i++){
+pos[i*3]=(Math.random()-0.5)*25
+pos[i*3+1]=(Math.random()-0.5)*25
+pos[i*3+2]=(Math.random()-0.5)*25
+}
+
+geo.setAttribute("position",new THREE.BufferAttribute(pos,3))
+
+const stars = new THREE.Points(
+geo,
+new THREE.PointsMaterial({size:0.035,color:0xe6c27a,opacity:0.85,transparent:true})
+)
+
+scene.add(stars)
+
+/* STATES */
+const scenes = [...document.querySelectorAll(".scene")]
+let cur=-1
+let running=false
+let introStarted=false
+
+function snap(i){
+if(i>=scenes.length) return
+
+if(scenes[cur]) scenes[cur].classList.remove("active")
+scenes[i].classList.add("active")
+cur=i
+}
+
+/* ANIMATE */
+function animate(){
+requestAnimationFrame(animate)
+
+stars.rotation.y += 0.0008
+stars.rotation.x += 0.0002
+
+camera.position.x = Math.sin(Date.now()*0.0002)*0.25
+camera.position.y = Math.cos(Date.now()*0.00025)*0.15
+camera.lookAt(0,0,0)
+
+renderer.render(scene,camera)
+}
+animate()
+
+/* TIMELINE */
+const timeline = [4000,4000,4000,5000,4500,4500,4500,5000]
+
+function play(){
+let t=0
+
+timeline.forEach((time,i)=>{
+setTimeout(()=>snap(i),t)
+t+=time
+})
+
+setTimeout(startMusic,500)
+}
+
+/* MUSIC */
+function startMusic(){
+const m=document.getElementById("music")
+m.volume=0
+m.play()
+
+let v=0
+let fade=setInterval(()=>{
+v+=0.01
+m.volume=Math.min(v,0.4)
+if(v>=0.4)clearInterval(fade)
+},120)
+}
+
+/* SPACE START */
+document.addEventListener("keydown",(e)=>{
+if(e.code==="Space" && !running && introStarted){
+running=true
+document.getElementById("start").style.opacity="0"
+
+setTimeout(()=>{
+document.getElementById("start").style.display="none"
+play()
+},1000)
+}
+})
+
+/* CLICK TO UNLOCK INTRO */
+document.addEventListener("click",()=>{
+if(!introStarted){
+introStarted=true
+}
+})
+
+/* INTRO ORBIT */
+let angle=0
+function orbit(){
+if(!introStarted || running){
+requestAnimationFrame(orbit)
+return
+}
+
+angle+=0.006
+const x=Math.cos(angle)*30
+const y=Math.sin(angle)*10
+
+document.getElementById("introWrap").style.transform=
+`translate3d(${x}px,${y}px,0) rotateY(${angle*40}deg)`
+
+requestAnimationFrame(orbit)
+}
+orbit()
+</script>
+
+</body>
+</html>
